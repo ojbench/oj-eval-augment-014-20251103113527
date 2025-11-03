@@ -600,9 +600,9 @@ std::any EvalVisitor::visitAtom(Python3Parser::AtomContext* ctx) {
     if (auto num = ctx->NUMBER()) {
         std::string t = num->getText();
         if (t.find('.') != std::string::npos) {
-            return Value{std::stod(t)};
+            try { return Value{std::stod(t)}; } catch (...) { return Value{0.0}; }
         } else {
-            return Value{std::stoll(t)};
+            try { return Value{std::stoll(t)}; } catch (...) { try { return Value{std::stod(t)}; } catch (...) { return Value{0LL}; } }
         }
     }
     if (ctx->NONE()) return Value{};
